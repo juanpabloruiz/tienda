@@ -1,0 +1,59 @@
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('../fonts/Ubuntu-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+a {
+    text-decoration: none;
+}
+
+body {
+  font-family: 'Ubuntu', Arial, Sans-serif;
+}
+
+[data-bs-theme="dark"] .nav-link {
+  color: #fff !important;
+}
+
+[data-bs-theme="dark"] .nav-link:hover {
+  background-color: #0d6efd;
+  color: #fff;
+  border-radius: .375rem;
+}
+
+.navbar-toggler {
+  border: none;
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.zoom {
+    overflow: hidden;
+}
+
+.zoom img {
+    transition: transform 0.2s linear;
+}
+
+.zoom:hover img {
+    transform: scale(1.2);
+}
+
+.ubuntu {
+  font-family: 'Ubuntu', Arial, Serif;
+}
+
+@media print {
+
+    #addItemBtn,
+    #facturaForm input[type="submit"] {
+        display: none;
+    }
+}

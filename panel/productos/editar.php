@@ -12,10 +12,10 @@ $id = $_GET['id'] ?? null;
         endif;
 ?>
 
-<form method="POST" action="insertar.php">
+<form method="POST" action="actualizar.php">
     <input type="hidden" name="id" value="<?= $campo['id'] ?? '' ?>">
     <input type="text" name="producto" value="<?= $campo['producto'] ?? '' ?>">
     <input type="text" name="precio" value="<?= $campo['precio'] ?? '' ?>">
-    <input type="submit" name="insertar" value="Agregar">
+    <input type="submit" name="insertar" value="Actualizar">
 </form>
 
