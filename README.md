@@ -1,2 +1,2 @@
-# tienda
+# Tienda
 Prototipo de tienda comercial
