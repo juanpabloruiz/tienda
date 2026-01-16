@@ -11,7 +11,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="../../css/bootstrap.min.css">
     <link rel="stylesheet" href="../../fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="../../css/estilo.css">
+    <link rel="stylesheet" href="../../css/style.css">
 
 </head>
 
@@ -19,110 +19,168 @@
 
     <main class="container-fluid my-3">
 
-        <!-- Agregar categoría -->
-        <?php
-        if (isset($_POST['category'])):
-            $nombre = $_POST['nombre'] ?? '';
-            $sentencia = $conexion->prepare("INSERT INTO categorias (nombre) VALUES (?)");
-            $sentencia->bind_param('s', $nombre);
-            $sentencia->execute();
-            $sentencia->close();
-        endif;
-
-        ?>
         <div class="row">
-            <div class="col-md-6">
-                <form method="POST" class="d-flex flex-column flex-md-row gap-2 mb-3">
-                    <input type="text" name="nombre" class="form-control" placeholder="Categoría">
-                    <input type="submit" name="category" value="Agregar categoría" class="btn btn-primary">
-                </form>
-                <?php
-                $sentencia = $conexion->prepare("SELECT * FROM categorias");
-                $sentencia->execute();
-                $resultado = $sentencia->get_result();
-                ?>
-                <ul>
-                    <?php while ($campo = $resultado->fetch_assoc()): ?>
-                        <li><?= $campo['nombre'] ?></li>
-                    <?php endwhile; ?>
-                </ul>
-            </div>
-        </div>
 
-        <div>
-            <h5>Generar interés sobre productos</h5>
-            <form method="post">
-                <?php
-                if (isset($_POST['porcentual'])) {
-                    $categoria = $_POST['categoria'];
-                    $porcentaje = $_POST['porcentaje'];
-                    $porcentaje_entero = round($porcentaje);
-                    $consulta = "UPDATE productos SET precio = ROUND(precio * (1 + ?/100)) WHERE categoria = ?";
-                    $sentencia = $conexion->prepare($consulta);
-                    $sentencia->bind_param("ii", $porcentaje_entero, $categoria);
-                    if ($sentencia->execute()):
-                        echo '<script>window.location="./"</script>';
-                    else:
-                        echo '<div class="alert alert-danger">Error en la actualización: ' . $sentencia->error . '</div>';
-                    endif;
-                }
-                ?>
-                <div class="row">
-                    <div class="col-md-auto">
-                        <select name="categoria" class="form-select mb-3">
-                            <option disabled selected>Categoría</option>
+            <!-- Add category -->
+            <section class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
 
-                            <?php
-                            $consulta = $conexion->query("SELECT * FROM categorias");
-                            while ($campo = $consulta->fetch_assoc()):
-                            ?>
+                        <h2 class="fs-4">Categorías</h2>
 
-                                <option value="<?php echo $campo['id']; ?>"><?php echo $campo['nombre']; ?></option>
+                        <?php
+                        if (isset($_POST['category'])):
+                            $nombre = $_POST['nombre'] ?? '';
+                            $sentencia = $conexion->prepare("INSERT INTO categorias (nombre) VALUES (?)");
+                            $sentencia->bind_param('s', $nombre);
+                            $sentencia->execute();
+                            $sentencia->close();
+                        endif;
+                        ?>
 
-                            <?php endwhile ?>
-
-                        </select>
-                    </div>
-                    <div class="col-md-auto">
-                        <div class="input-group mb-3">
-                            <input type="number" name="porcentaje" class="form-control" aria-label="Amount (to the nearest dollar)">
-                            <span class="input-group-text">%</span>
-                            <input type="submit" name="porcentual" value="Aplicar aumento" class="btn btn-primary">
-                        </div>
+                        <form method="POST" class="d-flex flex-column flex-md-row gap-2 mb-3">
+                            <input type="text" name="nombre" class="form-control" placeholder="Categoría">
+                            <input type="submit" name="category" value="Agregar categoría" class="btn btn-primary">
+                        </form>
+                        <?php
+                        $sentencia = $conexion->prepare("SELECT * FROM categorias");
+                        $sentencia->execute();
+                        $resultado = $sentencia->get_result();
+                        ?>
+                        <ul>
+                            <?php while ($campo = $resultado->fetch_assoc()): ?>
+                                <li><?= $campo['nombre'] ?></li>
+                            <?php endwhile; ?>
+                        </ul>
                     </div>
                 </div>
-            </form>
+            </section>
+
+            <!-- Percentage in products -->
+            <section class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+
+                        <h2 class="fs-4">Generar interés sobre productos</h2>
+
+                        <form method="post">
+                            <?php
+                            if (isset($_POST['porcentual'])) {
+                                $categoria = $_POST['categoria'];
+                                $porcentaje = $_POST['porcentaje'];
+                                $porcentaje_entero = round($porcentaje);
+                                $consulta = "UPDATE productos SET precio = ROUND(precio * (1 + ?/100)) WHERE categoria = ?";
+                                $sentencia = $conexion->prepare($consulta);
+                                $sentencia->bind_param("ii", $porcentaje_entero, $categoria);
+                                if ($sentencia->execute()):
+                                    echo '<script>window.location="./"</script>';
+                                else:
+                                    echo '<div class="alert alert-danger">Error en la actualización: ' . $sentencia->error . '</div>';
+                                endif;
+                            }
+                            ?>
+                            <div class="row">
+                                <div class="col-md-auto">
+                                    <select name="categoria" class="form-select mb-3">
+                                        <option disabled selected>Categoría</option>
+
+                                        <?php
+                                        $consulta = $conexion->query("SELECT * FROM categorias");
+                                        while ($campo = $consulta->fetch_assoc()):
+                                        ?>
+
+                                            <option value="<?php echo $campo['id']; ?>"><?php echo $campo['nombre']; ?></option>
+
+                                        <?php endwhile ?>
+
+                                    </select>
+                                </div>
+                                <div class="col-md-auto">
+                                    <div class="input-group mb-3">
+                                        <input type="number" name="porcentaje" class="form-control" aria-label="Amount (to the nearest dollar)">
+                                        <span class="input-group-text">%</span>
+                                        <input type="submit" name="porcentual" value="Aplicar aumento" class="btn btn-primary">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
         </div>
 
-        <?php
-        $editar = $_GET['editar'] ?? null;
-        $campo = null;
+        <!-- Inserción y edición -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <?php
+                $id = $_GET['editar'] ?? null;
+                $editar = null;
 
-        if ($editar):
-            $sentencia = $conexion->prepare("SELECT * FROM productos WHERE id = ?");
-            $sentencia->bind_param("i", $editar);
-            $sentencia->execute();
-            $resultado = $sentencia->get_result();
-            $editar = $resultado->fetch_assoc();
+                if ($id) {
+                    $sentencia = $conexion->prepare("SELECT * FROM productos WHERE id = ?");
+                    $sentencia->bind_param("i", $id);
+                    $sentencia->execute();
+                    $resultado = $sentencia->get_result();
+                    $editar = $resultado->fetch_assoc();
+                }
+                ?>
 
-        ?>
+                <?php if ($editar): ?>
 
-            <form method="POST" action="actualizar.php">
-                <input type="hidden" name="id" class="form-control" value="<?= $editar['id'] ?? '' ?>">
-                <input type="text" name="producto" class="form-control" value="<?= $editar['producto'] ?? '' ?>">
-                <input type="text" name="precio" class="form-control" value="<?= $editar['precio'] ?? '' ?>">
-                <input type="submit" name="insertar" value="Actualizar">
-            </form>
+                    <!-- Formulario edición -->
+                    <form method="POST" action="update" class="d-flex flex-column flex-md-row gap-2 mb-3">
+                        <input type="hidden" name="id" value="<?= $editar['id'] ?>">
+                        <input type="text" name="codigo" class="form-control" value="<?= $editar['codigo'] ?>">
+                        <input type="text" name="producto" class="form-control" value="<?= $editar['producto'] ?>">
+                        <input type="text" name="costo" class="form-control" value="<?= $editar['costo'] ?>">
+                        <input type="text" name="precio" class="form-control" value="<?= $editar['precio'] ?>">
+                        <input type="submit" value="Actualizar" class="btn btn-primary">
+                    </form>
 
-        <?php else: ?>
+                <?php else: ?>
 
-            <form method="POST" action="insertar.php">
-                <input type="text" name="producto" class="form-control" placeholder="Producto">
-                <input type="text" name="precio" class="form-control" placeholder="precio">
-                <input type="submit" name="insertar" value="Agregar">
-            </form>
+                    <!-- Formulario inserción -->
+                    <form method="POST" action="/insert" class="d-flex flex-column flex-md-row gap-2 mb-3">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-barcode text-danger"></i></span>
+                            <input type="text" name="codigo" class="form-control" placeholder="Código de barras">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-brands fa-product-hunt"></i></span>
+                            <input type="text" name="producto" class="form-control" placeholder="Producto">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <input type="text" name="costo" class="form-control" placeholder="Costo">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <input type="text" name="precio" class="form-control" placeholder="Precio">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa-solid fa-layer-group"></i></span>
+                            <select name="categoria" class="form-select" aria-label="Seleccionar categoría">
+                                <option selected value="0">Categoría</option>
+                                <?php
+                                $consulta = $conexion->query("SELECT * FROM categorias ORDER BY nombre ASC");
+                                while ($fila = $consulta->fetch_assoc()):
+                                ?>
+                                    <option value="<?= $fila['id'] ?>"><?= $fila['nombre'] ?></option>
+                                <?php
+                                endwhile
+                                ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <input type="submit" value="Agregar producto" class="btn btn-primary w-100 w-md-auto">
+                        </div>
+                    </form>
 
-        <?php endif; ?>
+                <?php endif; ?>
+
+            </div>
+        </div>
 
         <input type="search" placeholder="Buscar aquí..." name="busqueda" id="buscar" class="form-control">
         <hr>
@@ -159,8 +217,6 @@
                 </table>
 
             </form>
-
-        </div>
 
     </main>
 
