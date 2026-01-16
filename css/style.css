@@ -46,10 +46,6 @@ body {
     transform: scale(1.2);
 }
 
-.ubuntu {
-  font-family: 'Ubuntu', Arial, Serif;
-}
-
 @media print {
 
     #addItemBtn,
