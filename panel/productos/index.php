@@ -15,7 +15,7 @@
 
 </head>
 
-<body>
+<body class="bg-dark">
 
     <main class="container-fluid my-3">
 
@@ -61,7 +61,7 @@
                 <div class="card h-100">
                     <div class="card-body">
 
-                        <h2 class="fs-4">Generar interés sobre productos</h2>
+                        <h2 class="fs-4">Interés sobre productos</h2>
 
                         <form method="post">
                             <?php
@@ -80,7 +80,7 @@
                             }
                             ?>
                             <div class="row">
-                                <div class="col-md-auto">
+                                <div class="col-md-4">
                                     <select name="categoria" class="form-select mb-3">
                                         <option disabled selected>Categoría</option>
 
@@ -95,7 +95,7 @@
 
                                     </select>
                                 </div>
-                                <div class="col-md-auto">
+                                <div class="col-md-6">
                                     <div class="input-group mb-3">
                                         <input type="number" name="porcentaje" class="form-control" aria-label="Amount (to the nearest dollar)">
                                         <span class="input-group-text">%</span>
@@ -118,7 +118,7 @@
                 $editar = null;
 
                 if ($id) {
-                    $sentencia = $conexion->prepare("SELECT * FROM productos WHERE id = ?");
+                    $sentencia = $conexion->prepare("SELECT p.*, c.id AS categoria_id, c.nombre AS categoria_nombre FROM productos p LEFT JOIN categorias c ON c.id = p.categoria WHERE p.id = ?");
                     $sentencia->bind_param("i", $id);
                     $sentencia->execute();
                     $resultado = $sentencia->get_result();
@@ -128,37 +128,74 @@
 
                 <?php if ($editar): ?>
 
-                    <!-- Formulario edición -->
-                    <form method="POST" action="update" class="d-flex flex-column flex-md-row gap-2 mb-3">
+                    <!-- Updateing form -->
+                    <form method="POST" action="update.php" class="d-flex flex-column flex-md-row gap-2">
+
                         <input type="hidden" name="id" value="<?= $editar['id'] ?>">
-                        <input type="text" name="codigo" class="form-control" value="<?= $editar['codigo'] ?>">
-                        <input type="text" name="producto" class="form-control" value="<?= $editar['producto'] ?>">
-                        <input type="text" name="costo" class="form-control" value="<?= $editar['costo'] ?>">
-                        <input type="text" name="precio" class="form-control" value="<?= $editar['precio'] ?>">
+
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-barcode text-danger"></i></span>
+                            <input type="text" name="codigo" class="form-control" value="<?= $editar['codigo'] ?>">
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-brands fa-product-hunt"></i></span>
+                            <input type="text" name="producto" class="form-control" value="<?= $editar['producto'] ?>">
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" name="costo" class="form-control" value="<?= $editar['costo'] ?>">
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" name="precio" class="form-control" value="<?= $editar['precio'] ?>">
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-layer-group"></i></span>
+                            <select name="categoria" class="form-select">
+                                <option value="0">Categoría</option>
+                                <?php
+                                $consulta = $conexion->query("SELECT * FROM categorias ORDER BY nombre ASC");
+                                while ($fila = $consulta->fetch_assoc()):
+                                    $selected = ($fila['id'] == $editar['categoria_id']) ? 'selected' : '';
+                                ?>
+                                    <option value="<?= $fila['id'] ?>" <?= $selected ?>><?= $fila['nombre'] ?></option>
+                                <?php endwhile ?>
+                            </select>
+                        </div>
                         <input type="submit" value="Actualizar" class="btn btn-primary">
+
                     </form>
 
                 <?php else: ?>
 
-                    <!-- Formulario inserción -->
-                    <form method="POST" action="/insert" class="d-flex flex-column flex-md-row gap-2 mb-3">
-                        <div class="input-group mb-3">
+                    <!-- Insertion form -->
+                    <form method="POST" action="insertar.php" class="d-flex flex-column flex-md-row gap-2">
+
+                        <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-barcode text-danger"></i></span>
                             <input type="text" name="codigo" class="form-control" placeholder="Código de barras">
                         </div>
-                        <div class="input-group mb-3">
+
+                        <div class="input-group">
                             <span class="input-group-text"><i class="fa-brands fa-product-hunt"></i></span>
                             <input type="text" name="producto" class="form-control" placeholder="Producto">
                         </div>
-                        <div class="input-group mb-3">
+
+                        <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="text" name="costo" class="form-control" placeholder="Costo">
                         </div>
-                        <div class="input-group mb-3">
+
+                        <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="text" name="precio" class="form-control" placeholder="Precio">
                         </div>
-                        <div class="input-group mb-3">
+
+                        <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-layer-group"></i></span>
                             <select name="categoria" class="form-select" aria-label="Seleccionar categoría">
                                 <option selected value="0">Categoría</option>
@@ -172,9 +209,9 @@
                                 ?>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <input type="submit" value="Agregar producto" class="btn btn-primary w-100 w-md-auto">
-                        </div>
+
+                        <input type="submit" value="Agregar producto" class="btn btn-primary w-100 w-md-auto">
+
                     </form>
 
                 <?php endif; ?>
@@ -182,39 +219,46 @@
             </div>
         </div>
 
-        <input type="search" placeholder="Buscar aquí..." name="busqueda" id="buscar" class="form-control">
-        <hr>
+        <input type="search" placeholder="Buscar aquí..." name="busqueda" id="buscar" class="form-control mb-3">
         <div id="datos">
             <form method="POST" action="eliminar.php">
-                <button type="submit" class="btn btn-danger mb-3" onclick="return confirm('¿Estás seguro de eliminar los productos seleccionados?')">Eliminar seleccionados</button>
+                <button type="submit" class="btn btn-danger mb-3 w-100" onclick="return confirm('¿Estás seguro de eliminar los productos seleccionados?')">Eliminar seleccionados</button>
 
-                <table class="table table-hover">
-                    <tr class="table-dark">
-                        <th class="text-center"><input type="checkbox" id="selectAll"></th>
-                        <th>Producto</th>
-                        <th>Precio</th>
-                        <th>Fecha</th>
-                    </tr>
-
-                    <?php
-                    $resultado = $conexion->query("SELECT * FROM productos ORDER BY id DESC");
-                    while ($fila = $resultado->fetch_assoc()):
-                    ?>
-
-                        <tr>
-                            <td class="text-center"><input type="checkbox" name="ids[]" value="<?= $fila['id'] ?>"></td>
-                            <td onclick="window.location='?editar=<?= $fila['id'] ?>';" style="cursor:pointer;"><?= $fila['producto'] ?></td>
-                            <td onclick="window.location='?editar=<?= $fila['id'] ?>';" style="cursor:pointer;"><?= $fila['precio'] ?></td>
-                            <td onclick="window.location='?editar=<?= $fila['id'] ?>';" class="text-center" style="cursor:pointer;">
-                                <?= date('d/m/y', strtotime($fila['fecha'])) ?>
-                                <i class="fa-regular fa-alarm-clock mx-2 text-primary"></i>
-                                <?= date('H:i', strtotime($fila['fecha'])) ?>
-                            </td>
+                <div class="table-responsive rounded overflow-hidden">
+                    <table class="table table-hover mb-0">
+                        <tr class="table-dark">
+                            <th class="text-center"><input type="checkbox" id="selectAll"></th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Fecha</th>
                         </tr>
 
-                    <?php endwhile ?>
+                        <?php
+                        $resultado = $conexion->query("SELECT * FROM productos ORDER BY id DESC");
+                        while ($fila = $resultado->fetch_assoc()):
+                        ?>
 
-                </table>
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" name="ids[]" value="<?= $fila['id'] ?>">
+                                </td>
+                                <td onclick="window.location='?editar=<?= $fila['id'] ?>';" style="cursor:pointer;">
+                                    <?= $fila['producto'] ?>
+                                </td>
+                                <td onclick="window.location='?editar=<?= $fila['id'] ?>';" style="cursor:pointer;">
+                                    <?= $fila['precio'] ?>
+                                </td>
+                                <td onclick="window.location='?editar=<?= $fila['id'] ?>';" class="text-center" style="cursor:pointer;">
+                                    <?= date('d/m/y', strtotime($fila['fecha'])) ?>
+                                    <i class="fa-regular fa-alarm-clock mx-2 text-primary"></i>
+                                    <?= date('H:i', strtotime($fila['fecha'])) ?>
+                                </td>
+                            </tr>
+
+                        <?php endwhile ?>
+                    </table>
+                </div>
+
 
             </form>
 
